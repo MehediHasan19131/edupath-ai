@@ -82,12 +82,17 @@ class EduPathAgent:
         if not request_text.strip():
             trace.append("No request text - using the settings from the form.")
             return defaults
+        extracted = None
         if self.planner:
-            extracted = self.planner.interpret_request(request_text)
-            trace.append(f"{self.planner.name} read the request: {extracted.summary}")
-        else:
+            try:
+                extracted = self.planner.interpret_request(request_text)
+                trace.append(f"{self.planner.name} read the request: {extracted.summary}")
+            except LLMError as e:              # e.g. free-tier limit reached - keep going offline
+                trace.append(f"LLM couldn't read the request ({e}); using the offline parser.")
+        if extracted is None:
             extracted = parse_request(request_text)
-            trace.append("Read the request with the offline parser (no API key).")
+            if not self.planner:
+                trace.append("Read the request with the offline parser (no LLM configured).")
 
         goals = replace(defaults)
         if extracted.target_semesters:
@@ -113,7 +118,7 @@ class EduPathAgent:
         if mode not in MODES:
             raise ValueError(f"mode must be one of {list(MODES)}")
         if mode != "solver" and not self.planner:
-            raise LLMError(f"Mode '{mode}' needs an LLM. Put GEMINI_API_KEY (free) in .env or use mode 'solver'.")
+            raise LLMError(f"Mode '{mode}' needs an LLM. Set EDUPATH_PROVIDER in .env or use mode 'solver'.")
 
         start = time.time()
         usage_before = (self.planner.usage.calls, self.planner.usage.input_tokens,

@@ -1,12 +1,12 @@
 """
 Picks which LLM EduPath talks to.
 
-    make_planner()            -> OllamaPlanner, GeminiPlanner, ClaudePlanner, or None (offline)
+    make_planner()            -> OllamaPlanner, GroqPlanner, GeminiPlanner, ClaudePlanner, or None (offline)
 
 Choice order:
-  1. EDUPATH_PROVIDER in .env ("ollama", "gemini", "claude" or "offline"), if set.
+  1. EDUPATH_PROVIDER in .env ("ollama", "groq", "gemini", "claude" or "offline"), if set.
      Ollama (free, local) is only used when chosen here - it needs no key to detect.
-  2. otherwise whichever key exists: GEMINI_API_KEY first (free), then ANTHROPIC_API_KEY
+  2. otherwise whichever key exists: GROQ_API_KEY (free), GEMINI_API_KEY (free), ANTHROPIC_API_KEY
   3. no key at all -> None, and EduPath runs offline (rule-based parser + solver)
 
 To add another provider, write a class with the methods listed in schemas.py
@@ -27,7 +27,9 @@ def make_planner(provider: str | None = None, plan_effort: str = "high"):
     load_dotenv(ENV_FILE)
     provider = (provider or os.getenv("EDUPATH_PROVIDER") or "").strip().lower()
     if not provider:
-        if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
+        if os.getenv("GROQ_API_KEY"):
+            provider = "groq"
+        elif os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
             provider = "gemini"
         elif os.getenv("ANTHROPIC_API_KEY"):
             provider = "claude"
@@ -37,6 +39,9 @@ def make_planner(provider: str | None = None, plan_effort: str = "high"):
     if provider == "ollama":
         from .llm_ollama import OllamaPlanner
         return OllamaPlanner(plan_effort=plan_effort)
+    if provider == "groq":
+        from .llm_groq import GroqPlanner
+        return GroqPlanner(plan_effort=plan_effort)
     if provider == "gemini":
         from .llm_gemini import GeminiPlanner          # imported here so Claude-only users
         return GeminiPlanner(plan_effort=plan_effort)  # don't need google-genai, and vice versa
@@ -45,4 +50,4 @@ def make_planner(provider: str | None = None, plan_effort: str = "high"):
         return ClaudePlanner(plan_effort=plan_effort)
     if provider == "offline":
         return None
-    raise ValueError(f"Unknown EDUPATH_PROVIDER '{provider}' (use ollama, gemini, claude or offline).")
+    raise ValueError(f"Unknown EDUPATH_PROVIDER '{provider}' (use ollama, groq, gemini, claude or offline).")

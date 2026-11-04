@@ -65,9 +65,24 @@ after `ollama pull`-ing it. Gemini (free tier, not available for every Google pr
 Claude (paid) are also supported; see `.env.example`.
 
 **Host it for free** on [Streamlit Community Cloud](https://share.streamlit.io): sign in with
-GitHub → *Create app* → pick this repo, branch `main`, file `app.py` → *Deploy*. Free servers
-can't run an 8B model, so the hosted app runs offline: rule-based request parser + constraint
-solver (every plan rule-checked) + template explanations. Pushing to `main` redeploys it.
+GitHub → *Create app* → pick this repo, branch `main`, file `app.py` → *Deploy*. Pushing to
+`main` redeploys it.
+
+Free servers can't run a model themselves, so the hosted app calls **Groq's free API**
+(`openai/gpt-oss-120b`) to read requests and write explanations, while the constraint solver
+builds the plans. Get a free key at https://console.groq.com/keys, then in the app's
+*Settings → Secrets* paste:
+
+```toml
+GROQ_API_KEY = "your-key"
+EDUPATH_PROVIDER = "groq"
+EDUPATH_SOLVER_ONLY = "1"
+```
+
+`EDUPATH_SOLVER_ONLY` hides the LLM planning modes (10–25K tokens per run) so visitors can't
+use up the free daily quota (~200K tokens/day, shared by everyone). If the quota does run
+out, the app keeps working with the offline parser and template explanations. Without any
+secrets, the hosted app simply runs offline.
 
 ---
 
@@ -126,8 +141,9 @@ solver (every plan rule-checked) + template explanations. Pushing to `main` rede
 | `edupath/solver.py` | Chooses courses + schedules them; feasibility analysis; plan strategies | add a planning strategy, change elective ranking |
 | `edupath/prompts.py` | Every prompt sent to the LLM (shared by all providers) | tune how the LLM is instructed |
 | `edupath/schemas.py` | The reply shapes every LLM must follow (Pydantic) | add a field you want the LLM to return |
-| `edupath/llm.py` | Picks the provider from `.env` (`EDUPATH_PROVIDER`, else Gemini → Claude → offline) | add a new provider |
+| `edupath/llm.py` | Picks the provider from `.env` (`EDUPATH_PROVIDER`, else Groq → Gemini → Claude → offline) | add a new provider |
 | `edupath/llm_ollama.py` | Local model calls via Ollama (free, default Qwen3 8B) | change local model, context size, timeouts |
+| `edupath/llm_groq.py` | Groq cloud calls (free tier, used by the hosted app), retries on rate limits | change Groq model or token limits |
 | `edupath/llm_gemini.py` | Gemini calls (free tier), rate-limit waits and retries | change Gemini model or thinking level |
 | `edupath/llm_claude.py` | Claude calls (paid, optional) | change Claude model or effort |
 | `edupath/request_parser.py` | Offline regex parser for requests | teach it new phrasings |
@@ -135,7 +151,7 @@ solver (every plan rule-checked) + template explanations. Pushing to `main` rede
 | `app.py` | Streamlit web UI | change the interface |
 | `cli.py` | Command-line interface | — |
 | `evaluation/` | Research harness: scenarios, metrics, runner | add scenarios / metrics |
-| `tests/` | 36 tests, including a fake LLM for the repair loop and fake Gemini / Ollama servers | add a test for every rule you add |
+| `tests/` | 41 tests, including a fake LLM for the repair loop and fake Gemini / Ollama / Groq servers | add a test for every rule you add |
 
 ### Example: add a new rule
 

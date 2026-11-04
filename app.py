@@ -9,6 +9,8 @@ EDUPATH_PROVIDER=ollama in .env to use a free local model (see .env.example).
 
 from __future__ import annotations
 
+import os
+
 import streamlit as st
 
 from edupath.agent import MODES, AgentResult, EduPathAgent
@@ -28,9 +30,16 @@ def get_curriculum():
 
 
 cur = get_curriculum()
-_planner = make_planner()                  # Ollama / Gemini / Claude from .env, or None (offline)
+try:
+    _planner = make_planner()              # Ollama / Groq / Gemini / Claude from .env, or None (offline)
+except LLMError as e:                      # e.g. EDUPATH_PROVIDER=groq but no key yet
+    _planner = None
+    st.sidebar.error(str(e))
 planner_name = _planner.name if _planner else None
 has_key = planner_name is not None
+# On a public server, set EDUPATH_SOLVER_ONLY=1 so visitors can't burn the free LLM quota
+# with the (token-hungry) LLM planning modes. The LLM still reads requests and explains.
+solver_only = os.getenv("EDUPATH_SOLVER_ONLY", "").strip().lower() in ("1", "true", "yes")
 
 # --------------------------------------------------------------------------- #
 # Sidebar: who is the student, what are the settings
@@ -68,9 +77,15 @@ with st.sidebar:
         "solver": "LLM + constraint solver (recommended)",
         "llm_verified": "LLM plans, validator repairs",
         "llm_only": "LLM only (unverified baseline)"}[m],
-        disabled=not has_key, help="The two LLM modes exist for the research comparison.")
+        disabled=not has_key or solver_only, help="The two LLM modes exist for the research comparison.")
     if has_key:
         st.caption(f"AI model: {planner_name}")
+        if not planner_name.startswith("Ollama"):
+            st.caption(f"Your request and course list are sent to {planner_name.split(' (')[0]} "
+                       "to be read and explained - don't type personal details.")
+        if solver_only:
+            st.caption("The research modes are turned off on this public server.")
+            mode = "solver"
     else:
         st.info("The AI language model is off on this server. Your request is read by a rule-based "
                 "parser and plans come from the constraint solver, so every plan is rule-checked.")
@@ -103,7 +118,7 @@ request = st.text_area(
 if st.button("Plan my path", type="primary"):
     defaults = PlanningGoals(semesters, f"{season} {year}", max_cr, cur.policy.min_credits_per_semester,
                              interests=interests)
-    agent = EduPathAgent(cur, make_planner())
+    agent = EduPathAgent(cur, _planner)
     with st.spinner("Planning..." if mode == "solver" else f"{planner_name} is planning (this can take a minute)..."):
         try:
             st.session_state.result = agent.run(student, request, defaults, mode=mode)
