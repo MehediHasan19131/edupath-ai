@@ -64,6 +64,11 @@ Other models: set `EDUPATH_OLLAMA_MODEL` in `.env` (e.g. `llama3.1:8b`, or `qwen
 after `ollama pull`-ing it. Gemini (free tier, not available for every Google project) and
 Claude (paid) are also supported; see `.env.example`.
 
+**Host it for free** on [Streamlit Community Cloud](https://share.streamlit.io): sign in with
+GitHub → *Create app* → pick this repo, branch `main`, file `app.py` → *Deploy*. Free servers
+can't run an 8B model, so the hosted app runs offline: rule-based request parser + constraint
+solver (every plan rule-checked) + template explanations. Pushing to `main` redeploys it.
+
 ---
 
 ## How it works

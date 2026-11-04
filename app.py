@@ -72,8 +72,9 @@ with st.sidebar:
     if has_key:
         st.caption(f"AI model: {planner_name}")
     else:
-        st.info("No LLM configured - running offline (rule-based parser + solver). "
-                "Put EDUPATH_PROVIDER=ollama in .env to turn on the free local AI.")
+        st.info("The AI language model is off on this server. Your request is read by a rule-based "
+                "parser and plans come from the constraint solver, so every plan is rule-checked.")
+        st.caption("Running it yourself? See the README to turn on a free local model (Ollama).")
         mode = "solver"
 
 # --------------------------------------------------------------------------- #
@@ -83,6 +84,8 @@ with st.sidebar:
 st.title("🎓 EduPath AI")
 st.caption(f"Academic planning agent for {cur.program}, BRAC University · "
            "LLM reasoning grounded by a deterministic constraint solver")
+st.warning("Student project, not official BRAC University advising. Some prerequisites are assumed - "
+           "confirm your plan with your advisor before registering. Nothing you enter is saved.", icon="⚠️")
 
 deg = audit(cur, student.completed)
 c1, c2, c3 = st.columns(3)
