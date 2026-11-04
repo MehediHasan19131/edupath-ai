@@ -1,0 +1,14 @@
+{
+  "name": "Sample Student A",
+  "student_id": "21101001",
+  "program": "CSE",
+  "thesis_stage": "not_started",
+  "interests": ["ai"],
+  "completed": [
+    "ENG101", "ENG102", "MAT110", "PHY111", "STA201", "HUM103", "BNG103", "EMB101",
+    "HUM101", "PSY101", "ECO101",
+    "MAT120", "MAT215", "MAT216", "PHY112",
+    "CSE110", "CSE111", "CSE220", "CSE221", "CSE230", "CSE250", "CSE251", "CSE260",
+    "CSE320", "CSE321", "CSE330", "CSE331", "CSE340", "CSE341", "CSE370", "CSE422", "CSE423"
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "program": "BSc in Computer Science and Engineering (CSE)",
+  "university": "BRAC University",
+  "last_checked": "2026-11-01",
+  "sources": {
+    "official_prereqs": "https://cse.bracu.ac.bd/course/list  (HP = hard prerequisite, SP = soft prerequisite)",
+    "degree_outline": "https://cse.bracu.ac.bd/advising -> 'Degree/Course Outline - CSE' (GenEd 39 + School Core 12 + Program Core 75 + Program Elective 6 + CSE400 4 = 136)",
+    "thesis_rules": "https://cse.bracu.ac.bd/advising -> Thesis / Project / Internship information",
+    "assumed": "Not published on the pages above. Verify with your advisor and edit this file. Marked with \"verified\": false."
+  },
+
+  "policy": {
+    "total_credits_required": 136,
+    "terms": ["Spring", "Summer", "Fall"],
+    "min_credits_per_semester": 9,
+    "max_credits_per_semester": 15,
+    "policy_note": "Credit limits are editable defaults. BRACU allows over-limit loads only with advisor/chairperson approval.",
+    "thesis": {
+      "course": "CSE400",
+      "stages": ["Pre-thesis 1 (P1)", "Pre-thesis 2 (P2)", "Final defense (CSE400)"],
+      "min_credits_to_start": 75,
+      "note": "A thesis/project spans three semesters (P1, P2, CSE400). Register for CSE400 only in the final defense semester. Pre-thesis can start after 75 credits."
+    }
+  },
+
+  "courses": [
+    {"code": "ENG101", "title": "English Fundamentals", "credits": 3, "category": "GenEd"},
+    {"code": "ENG102", "title": "English Composition I", "credits": 3, "category": "GenEd", "hard_prereqs": ["ENG101"], "verified": false},
+    {"code": "MAT110", "title": "Math I: Differential Calculus and Co-ordinate Geometry", "credits": 3, "category": "GenEd"},
+    {"code": "PHY111", "title": "Principles of Physics I", "credits": 3, "category": "GenEd"},
+    {"code": "STA201", "title": "Elements of Statistics and Probability", "credits": 3, "category": "GenEd", "tags": ["data", "ai"]},
+    {"code": "HUM103", "title": "Ethics and Culture", "credits": 3, "category": "GenEd"},
+    {"code": "BNG103", "title": "Bangla Language and Literature", "credits": 3, "category": "GenEd"},
+    {"code": "EMB101", "title": "Emergence of Bangladesh", "credits": 3, "category": "GenEd", "aliases": ["DEV101"]},
+
+    {"code": "MAT120", "title": "Math II: Integral Calculus and Differential Equations", "credits": 3, "category": "School Core", "hard_prereqs": ["MAT110"], "verified": false},
+    {"code": "MAT215", "title": "Math III: Complex Variables and Laplace Transformations", "credits": 3, "category": "School Core", "hard_prereqs": ["MAT120"], "verified": false},
+    {"code": "MAT216", "title": "Math IV: Linear Algebra and Fourier Analysis", "credits": 3, "category": "School Core", "hard_prereqs": ["MAT120"], "verified": false},
+    {"code": "PHY112", "title": "Principles of Physics II", "credits": 3, "category": "School Core", "hard_prereqs": ["PHY111"], "verified": false},
+
+    {"code": "CSE110", "title": "Programming Language I", "credits": 3, "category": "Program Core", "aliases": ["CSE161", "EEE103", "ECE103"]},
+    {"code": "CSE111", "title": "Programming Language II", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE110"]},
+    {"code": "CSE220", "title": "Data Structures", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE111"]},
+    {"code": "CSE221", "title": "Algorithms", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE220"]},
+    {"code": "CSE230", "title": "Discrete Mathematics", "credits": 3, "category": "Program Core"},
+    {"code": "CSE250", "title": "Circuits and Electronics", "credits": 3, "category": "Program Core", "soft_prereqs": ["PHY112"]},
+    {"code": "CSE251", "title": "Electronic Devices and Circuits", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE250"]},
+    {"code": "CSE260", "title": "Digital Logic Design", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE251"], "aliases": ["EEE283", "ECE283", "EEE301"]},
+    {"code": "CSE320", "title": "Data Communications", "credits": 3, "category": "Program Core", "tags": ["networks"]},
+    {"code": "CSE321", "title": "Operating Systems", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE221"], "soft_prereqs": ["CSE340"], "tags": ["systems"]},
+    {"code": "CSE330", "title": "Numerical Methods", "credits": 3, "category": "Program Core", "hard_prereqs": ["MAT216"]},
+    {"code": "CSE331", "title": "Automata and Computability", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE221"]},
+    {"code": "CSE340", "title": "Computer Architecture", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE260"], "tags": ["systems"]},
+    {"code": "CSE341", "title": "Microprocessors", "credits": 3, "category": "Program Core", "soft_prereqs": ["CSE340"], "tags": ["hardware"]},
+    {"code": "CSE350", "title": "Digital Electronics and Pulse Techniques", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE251"], "tags": ["hardware"]},
+    {"code": "CSE360", "title": "Computer Interfacing", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE341"], "tags": ["hardware"]},
+    {"code": "CSE370", "title": "Database Systems", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE221"], "tags": ["data", "web"]},
+    {"code": "CSE400", "title": "Final Year Design Project / Thesis / Internship", "credits": 4, "category": "Capstone", "min_credits_completed": 75},
+    {"code": "CSE420", "title": "Compiler Design", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE321", "CSE331", "CSE340"]},
+    {"code": "CSE421", "title": "Computer Networks", "credits": 3, "category": "Program Core", "soft_prereqs": ["CSE320"], "tags": ["networks", "security"]},
+    {"code": "CSE422", "title": "Artificial Intelligence", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE221"], "tags": ["ai"]},
+    {"code": "CSE423", "title": "Computer Graphics", "credits": 3, "category": "Program Core", "hard_prereqs": ["MAT216"], "tags": ["graphics"]},
+    {"code": "CSE460", "title": "VLSI Design", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE260"], "tags": ["hardware"]},
+    {"code": "CSE461", "title": "Introduction to Robotics", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE260", "CSE341", "CSE360"], "tags": ["robotics", "ai"]},
+    {"code": "CSE470", "title": "Software Engineering", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE370"], "tags": ["web"]},
+    {"code": "CSE471", "title": "Systems Analysis and Design", "credits": 3, "category": "Program Core", "hard_prereqs": ["CSE370"]},
+
+    {"code": "CSE391", "title": "Programming for the Internet", "credits": 3, "category": "CSE Elective", "hard_prereqs": ["CSE111"], "tags": ["web"], "verified": false},
+    {"code": "CSE427", "title": "Machine Learning", "credits": 3, "category": "CSE Elective", "hard_prereqs": ["CSE221"], "tags": ["ai", "data"], "verified": false},
+    {"code": "CSE428", "title": "Image Processing", "credits": 3, "category": "CSE Elective", "hard_prereqs": ["CSE221"], "tags": ["ai", "graphics"], "verified": false},
+    {"code": "CSE431", "title": "Natural Language Processing", "credits": 3, "category": "CSE Elective", "hard_prereqs": ["CSE221"], "tags": ["ai"], "verified": false},
+    {"code": "CSE447", "title": "Cryptography and Cryptanalysis", "credits": 3, "category": "CSE Elective", "hard_prereqs": ["CSE221"], "tags": ["security"], "verified": false}
+  ],
+
+  "option_pools": {
+    "_comment": "GenEd stream options from the degree outline. Each becomes a 3-credit course with no prerequisites. Titles are not in the outline; add them if you like by moving a code into 'courses'.",
+    "gened_stream2": ["CHE101", "BIO101", "ENV103", "GSC110"],
+    "gened_stream3": ["HUM101", "HUM102", "HST102", "HST103", "HST104", "HUM207", "ENG110", "ENG113", "ENG114", "ENG115", "ENG333", "HUM104", "HUM110", "HUM201", "HUM210", "HUM301"],
+    "gened_stream4": ["PSY101", "SOC101", "ANT101", "POL101", "BUS201", "ECO101", "ECO102", "ECO105", "BUS102", "POL102", "POL103", "POL201", "POL202", "POL203", "POL210", "PSY102", "DEV104", "DEV201", "SOC201", "ANT342", "ANT351", "BUS333", "BUS335"],
+    "gened_stream5": ["CST201", "CST204", "CST301", "CST302", "CST303", "CST304", "CST305", "CST306", "CST307", "CST308", "CST309", "CST310", "CST314", "CST333", "BUS334"]
+  },
+
+  "requirements": [
+    {
+      "id": "gened_required",
+      "name": "GenEd: required courses (Streams 1-4)",
+      "kind": "all",
+      "courses": ["ENG101", "ENG102", "MAT110", "PHY111", "STA201", "HUM103", "BNG103", "EMB101"]
+    },
+    {
+      "id": "gened_stream3",
+      "name": "GenEd Stream 3: one Arts & Humanities course",
+      "kind": "choose", "count": 1,
+      "courses": ["@gened_stream3"]
+    },
+    {
+      "id": "gened_stream4",
+      "name": "GenEd Stream 4: one Social Sciences course",
+      "kind": "choose", "count": 1,
+      "courses": ["@gened_stream4"]
+    },
+    {
+      "id": "gened_stream5",
+      "name": "GenEd Stream 5: one Communities (CST) course",
+      "kind": "choose", "count": 1,
+      "courses": ["@gened_stream5"]
+    },
+    {
+      "id": "gened_elective",
+      "name": "GenEd electives: two more courses from Streams 2-5",
+      "kind": "choose", "count": 2,
+      "courses": ["@gened_stream2", "@gened_stream3", "@gened_stream4", "@gened_stream5"]
+    },
+    {
+      "id": "school_core",
+      "name": "School Core (Math & Physics)",
+      "kind": "all",
+      "courses": ["MAT120", "MAT215", "MAT216", "PHY112"]
+    },
+    {
+      "id": "program_core",
+      "name": "Program Core (CSE)",
+      "kind": "all",
+      "courses": ["CSE110", "CSE111", "CSE220", "CSE221", "CSE230", "CSE250", "CSE251", "CSE260", "CSE320", "CSE321", "CSE330", "CSE331", "CSE340", "CSE341", "CSE350", "CSE360", "CSE370", "CSE420", "CSE421", "CSE422", "CSE423", "CSE460", "CSE461", "CSE470", "CSE471"]
+    },
+    {
+      "id": "program_elective",
+      "name": "Program electives: two courses, at least one CSE elective",
+      "kind": "choose", "count": 2,
+      "courses": ["CSE391", "CSE427", "CSE428", "CSE431", "CSE447", "@gened_stream2", "@gened_stream3", "@gened_stream4", "@gened_stream5"],
+      "min_from": ["CSE391", "CSE427", "CSE428", "CSE431", "CSE447"],
+      "min_from_count": 1
+    },
+    {
+      "id": "capstone",
+      "name": "Final Year Project / Thesis / Internship",
+      "kind": "all",
+      "courses": ["CSE400"]
+    }
+  ]
+}

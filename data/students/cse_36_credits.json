@@ -1,0 +1,11 @@
+{
+  "name": "Sample Student C",
+  "student_id": "24101003",
+  "program": "CSE",
+  "thesis_stage": "not_started",
+  "interests": ["robotics"],
+  "completed": [
+    "ENG101", "ENG102", "MAT110", "PHY111", "MAT120", "PHY112",
+    "CSE110", "CSE111", "CSE220", "CSE230", "HUM103", "BNG103"
+  ]
+}

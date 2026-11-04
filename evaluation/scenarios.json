@@ -1,0 +1,17 @@
+{
+  "_comment": "Each scenario = a student record + explicit goals. 'expected_feasible' is double-checked against the solver's feasibility analysis when the eval runs. Add your own scenarios (e.g. real, anonymised student records) to grow the benchmark.",
+  "scenarios": [
+    {"id": "A96-3sem",        "student": "cse_96_credits.json",          "semesters": 3, "max_credits": 15, "expected_feasible": true},
+    {"id": "A96-4sem-ai",     "student": "cse_96_credits.json",          "semesters": 4, "max_credits": 12, "interests": ["ai"], "expected_feasible": true},
+    {"id": "A96-2sem",        "student": "cse_96_credits.json",          "semesters": 2, "max_credits": 15, "expected_feasible": false},
+    {"id": "A96-3sem-12cr",   "student": "cse_96_credits.json",          "semesters": 3, "max_credits": 12, "expected_feasible": false},
+    {"id": "B60-6sem",        "student": "cse_60_credits.json",          "semesters": 6, "max_credits": 15, "expected_feasible": true},
+    {"id": "B60-7sem-websec", "student": "cse_60_credits.json",          "semesters": 7, "max_credits": 12, "interests": ["web", "security"], "expected_feasible": true},
+    {"id": "B60-5sem",        "student": "cse_60_credits.json",          "semesters": 5, "max_credits": 15, "expected_feasible": false},
+    {"id": "C36-7sem",        "student": "cse_36_credits.json",          "semesters": 7, "max_credits": 15, "expected_feasible": true},
+    {"id": "C36-9sem-robot",  "student": "cse_36_credits.json",          "semesters": 9, "max_credits": 12, "interests": ["robotics"], "expected_feasible": true},
+    {"id": "C36-6sem",        "student": "cse_36_credits.json",          "semesters": 6, "max_credits": 15, "expected_feasible": false},
+    {"id": "D108-2sem",       "student": "cse_108_credits_p1_done.json", "semesters": 2, "max_credits": 15, "expected_feasible": true},
+    {"id": "D108-1sem",       "student": "cse_108_credits_p1_done.json", "semesters": 1, "max_credits": 15, "expected_feasible": false}
+  ]
+}
