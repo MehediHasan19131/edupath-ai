@@ -22,6 +22,7 @@ Requests (course lists, no names) are processed by Groq.
 from __future__ import annotations
 
 import copy
+import json
 import os
 import time
 
@@ -35,8 +36,11 @@ DEFAULT_GROQ_MODEL = os.getenv("EDUPATH_GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_URL = "https://api.groq.com/openai/v1"
 
 RETRIES = 3              # on 429 / 5xx
-MAX_WAIT_SECONDS = 30    # never make a web visitor wait longer than this per retry
+MAX_WAIT_SECONDS = 30    # never make a web visitor wait longer than this per retry (run_eval raises it)
 TIMEOUT_SECONDS = 120
+# Groq counts input + max_completion_tokens against the tokens-per-minute limit, so a
+# request asking for more than the limit is refused outright. Keep every request under it.
+TOKENS_PER_MINUTE = int(os.getenv("EDUPATH_GROQ_TPM", "8000"))
 
 
 class GroqPlanner:
@@ -53,6 +57,7 @@ class GroqPlanner:
         self.client = client
         self.plan_effort = plan_effort           # low | medium | high (gpt-oss reasoning effort)
         self.usage = Usage()
+        self.max_wait = MAX_WAIT_SECONDS
 
     # ---- the four jobs ----------------------------------------------------- #
 
@@ -82,7 +87,6 @@ class GroqPlanner:
         body = {
             "model": self.model,
             "messages": [{"role": "system", "content": system}] + messages,
-            "max_completion_tokens": max_tokens,
         }
         if self.model.startswith("openai/gpt-oss"):
             body["reasoning_effort"] = effort
@@ -90,6 +94,9 @@ class GroqPlanner:
         if schema:
             body["response_format"] = {"type": "json_schema", "json_schema": {
                 "name": schema.__name__, "strict": True, "schema": strict_schema(schema)}}
+        # Rough token estimate (~3.5 characters per token) of what we send.
+        sent_tokens = len(json.dumps(body)) // 3.5
+        body["max_completion_tokens"] = int(max(1000, min(max_tokens, TOKENS_PER_MINUTE - sent_tokens - 300)))
 
         for attempt in range(RETRIES + 1):
             try:
@@ -97,10 +104,11 @@ class GroqPlanner:
             except httpx.HTTPError as e:
                 raise LLMError(f"Could not reach Groq: {e}") from e
             retryable = r.status_code == 429 or r.status_code >= 500
-            if retryable and attempt < RETRIES:
-                time.sleep(min(_retry_after(r, attempt), MAX_WAIT_SECONDS))
+            wait = _retry_after(r, attempt)
+            if retryable and attempt < RETRIES and wait <= self.max_wait:
+                time.sleep(wait)
                 continue
-            break
+            break                                 # success, or a long wait = daily limit used up
         if r.status_code != 200:
             raise LLMError(_friendly(r))
 
@@ -111,7 +119,8 @@ class GroqPlanner:
         self.usage.output_tokens += u.get("completion_tokens") or 0
         choice = data["choices"][0]
         if choice.get("finish_reason") == "length":
-            raise LLMError(f"Groq ran out of output tokens ({max_tokens}) before finishing.")
+            raise LLMError(f"Groq ran out of output tokens ({body['max_completion_tokens']}) before finishing - "
+                           "try a lower effort (less reasoning).")
         return choice["message"].get("content") or ""
 
 
@@ -163,7 +172,10 @@ def _friendly(r: httpx.Response) -> str:
     if r.status_code == 401:
         return "Groq API key missing or invalid. Check GROQ_API_KEY (free at console.groq.com/keys)."
     if r.status_code == 429:
-        return "Groq free-tier limit reached. Try again in a minute (or tomorrow if the daily limit is used up)."
+        return ("Groq free-tier limit reached. Try again in a minute (or tomorrow if the daily limit is used up). "
+                f"Groq said: {message}")
+    if r.status_code == 413:
+        return f"Request too large for Groq's free tier: {message}"
     if r.status_code == 404:
         return f"Groq model not found ({message}). Set EDUPATH_GROQ_MODEL to a current model."
     return f"Groq error {r.status_code}: {message}"

@@ -151,7 +151,7 @@ secrets, the hosted app simply runs offline.
 | `app.py` | Streamlit web UI | change the interface |
 | `cli.py` | Command-line interface | — |
 | `evaluation/` | Research harness: scenarios, metrics, runner | add scenarios / metrics |
-| `tests/` | 41 tests, including a fake LLM for the repair loop and fake Gemini / Ollama / Groq servers | add a test for every rule you add |
+| `tests/` | 44 tests, including a fake LLM for the repair loop and fake Gemini / Ollama / Groq servers | add a test for every rule you add |
 
 ### Example: add a new rule
 
@@ -237,9 +237,28 @@ python -m evaluation.run_eval --modes llm_only,llm_verified --scenarios A96-3sem
 ```
 
 The first command needs no key (solver only). The second calls the LLM in `.env` — it prints how many runs
-it will make and asks before starting. Results go to `evaluation/results/<timestamp>/`
+it will make and asks before starting. Results go to `evaluation/results/<timestamp>-<model>/`
 (`runs.jsonl` per run, `summary.md` table). Scenarios live in `evaluation/scenarios.json`:
 12 cases over 4 students, half of them deliberately impossible.
+
+**A second, larger model (Groq, free, fast).** Put `GROQ_API_KEY=...` in `.env` (keep
+`EDUPATH_PROVIDER=ollama` — the flag below picks Groq just for this run):
+
+```bash
+python -m evaluation.run_eval --modes solver,llm_only,llm_verified --provider groq --model openai/gpt-oss-120b --effort medium
+```
+
+The free tier allows ~200K tokens/day per model and the full set needs more, so after the
+daily limit the remaining runs fail fast. The next day, finish them with the `--resume`
+command the script prints. (If your hosted app also uses Groq, give it a different model —
+`EDUPATH_GROQ_MODEL = "openai/gpt-oss-20b"` in its secrets — so the two don't share a quota.)
+`--effort medium` keeps the reasoning short enough to fit Groq's 8K tokens-per-minute cap.
+
+**Timeouts and failures.** Local planning calls can take 20+ minutes; the limit is
+`EDUPATH_OLLAMA_TIMEOUT` (default 2700 s). On a Mac the script keeps the computer awake. A run
+that still fails counts as a **failure** in `summary.md` (0 valid plans, wrong feasibility
+answer); `plan_valid_rate_completed` shows the rate over completed runs only. Retry just the
+failed runs with `--resume <results folder>`.
 
 **Ideas to strengthen the paper**
 

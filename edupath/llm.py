@@ -23,8 +23,10 @@ from dotenv import load_dotenv
 ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 
 
-def make_planner(provider: str | None = None, plan_effort: str = "high"):
+def make_planner(provider: str | None = None, plan_effort: str = "high", model: str | None = None):
+    """model overrides the provider's default model (e.g. "openai/gpt-oss-120b")."""
     load_dotenv(ENV_FILE)
+    kwargs = {"plan_effort": plan_effort, **({"model": model} if model else {})}
     provider = (provider or os.getenv("EDUPATH_PROVIDER") or "").strip().lower()
     if not provider:
         if os.getenv("GROQ_API_KEY"):
@@ -38,16 +40,16 @@ def make_planner(provider: str | None = None, plan_effort: str = "high"):
 
     if provider == "ollama":
         from .llm_ollama import OllamaPlanner
-        return OllamaPlanner(plan_effort=plan_effort)
+        return OllamaPlanner(**kwargs)
     if provider == "groq":
         from .llm_groq import GroqPlanner
-        return GroqPlanner(plan_effort=plan_effort)
+        return GroqPlanner(**kwargs)
     if provider == "gemini":
         from .llm_gemini import GeminiPlanner          # imported here so Claude-only users
-        return GeminiPlanner(plan_effort=plan_effort)  # don't need google-genai, and vice versa
+        return GeminiPlanner(**kwargs)               # don't need google-genai, and vice versa
     if provider == "claude":
         from .llm_claude import ClaudePlanner
-        return ClaudePlanner(plan_effort=plan_effort)
+        return ClaudePlanner(**kwargs)
     if provider == "offline":
         return None
     raise ValueError(f"Unknown EDUPATH_PROVIDER '{provider}' (use ollama, groq, gemini, claude or offline).")

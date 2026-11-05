@@ -68,3 +68,26 @@ def test_missing_key_is_explained(monkeypatch):
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     with pytest.raises(LLMError, match="console.groq.com"):
         GroqPlanner()
+
+
+def test_stops_at_once_when_the_daily_limit_is_used_up(monkeypatch):
+    slept = []
+    monkeypatch.setattr(llm_groq.time, "sleep", slept.append)
+    planner, sent = fake_planner([PLAN_JSON], statuses=[429, 200])
+
+    def daily_limit(request):                     # Groq says "come back in an hour"
+        sent.append(json.loads(request.content))
+        return httpx.Response(429, headers={"retry-after": "3600"}, json={"error": {"message": "TPD"}})
+
+    planner.client = httpx.Client(base_url="https://groq.test", transport=httpx.MockTransport(daily_limit))
+    with pytest.raises(LLMError, match="daily limit"):
+        planner.propose_plans("brief")
+    assert len(sent) == 1 and not slept
+
+
+def test_requests_fit_the_free_tokens_per_minute_limit():
+    planner, sent = fake_planner([PLAN_JSON])
+    planner.propose_plans("x" * 12000)            # a long brief (~3.4K tokens)
+    body = sent[0]
+    sent_tokens = len(json.dumps({k: v for k, v in body.items() if k != "max_completion_tokens"})) / 3.5
+    assert sent_tokens + body["max_completion_tokens"] <= llm_groq.TOKENS_PER_MINUTE

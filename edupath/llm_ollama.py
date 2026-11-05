@@ -31,7 +31,9 @@ OLLAMA_URL = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 
 CONTEXT_TOKENS = 16384       # room for the ~2k-token brief plus repair rounds
 MAX_OUTPUT_TOKENS = 12000    # thinking + answer
-TIMEOUT_SECONDS = 900        # local models are slow; don't give up too early
+# Local models are slow (a thinking planning call on a laptop can take 20+ minutes);
+# don't give up too early. Set EDUPATH_OLLAMA_TIMEOUT in .env to change it.
+TIMEOUT_SECONDS = float(os.getenv("EDUPATH_OLLAMA_TIMEOUT", "2700"))
 
 
 class OllamaPlanner:
@@ -89,8 +91,8 @@ class OllamaPlanner:
             raise LLMError("Ollama isn't running. Open the Ollama app (or run `ollama serve`), "
                            "then try again.") from e
         except httpx.TimeoutException as e:
-            raise LLMError(f"Ollama took longer than {TIMEOUT_SECONDS}s. Try plan effort 'low' "
-                           "or a smaller model.") from e
+            raise LLMError(f"Ollama took longer than {TIMEOUT_SECONDS:g}s (EDUPATH_OLLAMA_TIMEOUT). "
+                           "Raise it, or try a smaller model.") from e
         if r.status_code != 200:
             raise LLMError(_friendly(r, self.model))
 
